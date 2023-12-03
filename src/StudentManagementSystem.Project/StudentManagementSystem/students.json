@@ -1,0 +1,25 @@
+[
+  {
+    "StudentId": "091-352-041",
+    "FirstName": "Md.",
+    "MiddleName": "Mosabbir",
+    "LastName": "Hossain",
+    "Department": 1,
+    "Degree": 1,
+    "JoiningBatch": "Spring",
+    "SemestersAttended": [
+      {
+        "SemesterCode": 0,
+        "Year": "2009",
+        "Courses": [
+          {
+            "CourseId": "CSC 101",
+            "CourseName": "Introduction to Computer Science",
+            "InstructorName": "Prof. Smith",
+            "NumberOfCredits": 3
+          }
+        ]
+      }
+    ]
+  }
+]
