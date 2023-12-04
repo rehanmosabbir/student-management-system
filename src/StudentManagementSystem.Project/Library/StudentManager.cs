@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Library.Interfaces;
 using Library.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace StudentManagementSystem
 {
@@ -60,21 +61,122 @@ namespace StudentManagementSystem
             Console.Write("Enter Student ID (eg. 091-352-041): ");
             newStudent.StudentId = Console.ReadLine();
 
-            Console.Write("Enter Joining Batch(Spring,Summer,Fall): ");
-            newStudent.JoiningBatch = Console.ReadLine();
+            bool isFoundBatch = true;
 
-            Console.Write("Enter Department (ComputerScience, BBA, English): ");
-            Enum.TryParse(Console.ReadLine(), out Department department);
-            newStudent.Department = department;
+            while (isFoundBatch)
+            {
+                Console.Write("Enter Joining Batch(Spring,Summer,Fall): ");
+                var joiningBatch = Console.ReadLine();
 
-            Console.Write("Enter Degree (BSC, BBA, BA, MSC, MBA, MA): ");
-            Enum.TryParse(Console.ReadLine(), out Degree degree);
-            newStudent.Degree = degree;
 
-            students.Add(newStudent);
-            Console.WriteLine();
-            Console.WriteLine("Student Added Successfully");
-            SaveStudentsToJson();
+                foreach (var batch in (SemesterCode[])Enum.GetValues(typeof(SemesterCode)))
+                {
+                    if (batch.ToString() == joiningBatch)
+                    {
+                        isFoundBatch = false;
+                    }
+                }
+                if (isFoundBatch)
+                {
+                    Console.WriteLine("Please enter valid joining batch");
+                }
+                else
+                {
+                    newStudent.JoiningBatch = joiningBatch;
+                    isFoundBatch = false;
+
+                }
+            }
+
+
+            bool isFoundDepartment = true;
+
+            while (isFoundDepartment)
+            {
+                Console.Write("Enter Department (ComputerScience, BBA, English): ");
+                string department = Console.ReadLine();
+
+
+                foreach (var dept in (Department[])Enum.GetValues(typeof(Department)))
+                {
+                    if (dept.ToString() == department)
+                    {
+                        isFoundDepartment = false;
+                    }
+                }
+                if (isFoundDepartment)
+                {
+                    Console.WriteLine("Please enter valid Department");
+                }
+                else
+                {
+                    Enum.TryParse(department, out Department dept);
+                    newStudent.Department = dept;
+                    isFoundDepartment = false;
+
+                }
+            }
+
+            //Console.Write("Enter Department (ComputerScience, BBA, English): ");
+            //Enum.TryParse(Console.ReadLine(), out Department department);
+            //newStudent.Department = department;
+
+
+
+            bool isFoundDegree = true;
+
+            while (isFoundDegree)
+            {
+                Console.Write("Enter Degree (BSC, BBA, BA, MSC, MBA, MA): ");
+                string degree = Console.ReadLine();
+
+
+                foreach (var deg in (Degree[])Enum.GetValues(typeof(Degree)))
+                {
+                    if (deg.ToString() == degree)
+                    {
+                        isFoundDegree = false;
+                    }
+                }
+                if (isFoundDegree)
+                {
+                    Console.WriteLine("Please enter valid Degree");
+                }
+                else
+                {
+                    Enum.TryParse(degree, out Degree deg);
+                    newStudent.Degree = deg;
+                    isFoundDegree = false;
+
+                }
+            }
+
+            //Console.Write("Enter Degree (BSC, BBA, BA, MSC, MBA, MA): ");
+            //Enum.TryParse(Console.ReadLine(), out Degree degree);
+            //newStudent.Degree = degree;
+
+
+
+            var validationResults = new System.Collections.Generic.List<ValidationResult>();
+            var validationContext = new ValidationContext(newStudent, null, null);
+
+            bool isValid = Validator.TryValidateObject(newStudent, validationContext, validationResults, true);
+
+            if (!isValid)
+            {
+                foreach (var validationResult in validationResults)
+                {
+                    Console.WriteLine(validationResult.ErrorMessage);
+                }
+
+            }
+            else
+            {
+                students.Add(newStudent);
+                Console.WriteLine();
+                Console.WriteLine("Student Added Successfully");
+                SaveStudentsToJson();
+            }
         }
 
         public void ViewStudentDetails(string studentID)
@@ -129,19 +231,24 @@ namespace StudentManagementSystem
         {
             // Implementation for adding a new semester to the student and adding courses
             var student = students.FirstOrDefault(s => s.StudentId == studentID);
+
+
             if (student != null)
             {
+                string studentDepartment = student.Department.ToString();
                 Semester newSemester = new Semester();
 
                 Console.Write("Enter Semester Code (Summer, Fall, Spring): ");
                 Enum.TryParse(Console.ReadLine(), out SemesterCode semesterCode);
-                newSemester.SemesterCode = semesterCode;
+                newSemester.SemesterCode = semesterCode;// Spring
 
                 Console.Write("Enter Year (YYYY): ");
                 newSemester.Year = Console.ReadLine();
 
+                var matchedCourses = allCourses.Where(course => course.CourseId.StartsWith(studentDepartment.Substring(0, 1))).ToList();
+
                 // Display courses not taken by the student
-                var coursesNotTaken = allCourses.Where(course => !student.SemestersAttended.Any(semester => semester.Courses.Any(c => c.CourseId == course.CourseId))).ToList();
+                var coursesNotTaken = matchedCourses.Where(course => !student.SemestersAttended.Any(semester => semester.Courses.Any(c => c.CourseId == course.CourseId))).ToList();
                 Console.WriteLine();
                 Console.WriteLine("Available Courses:");
                 foreach (var course in coursesNotTaken)
