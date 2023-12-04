@@ -1,8 +1,8 @@
 [
   {
-    "StudentId": "091-352-041",
+    "StudentId": "091-352-",
     "FirstName": "Md.",
-    "MiddleName": "Mosabbir",
+    "MiddleName": "Jabed",
     "LastName": "Hossain",
     "Department": 1,
     "Degree": 1,
@@ -10,6 +10,18 @@
     "SemestersAttended": [
       {
         "SemesterCode": 0,
+        "Year": "2009",
+        "Courses": [
+          {
+            "CourseId": "CSC 201",
+            "CourseName": "Artificial Intelligence",
+            "InstructorName": "Dr. Williams",
+            "NumberOfCredits": 3
+          }
+        ]
+      },
+      {
+        "SemesterCode": 2,
         "Year": "2009",
         "Courses": [
           {
